@@ -1,0 +1,2 @@
+[nerfstudio.method_configs]
+key_gaussian = key_gaussian.key_gaussian_config:key_gaussian
