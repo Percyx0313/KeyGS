@@ -4,7 +4,7 @@ from nerfstudio.configs.base_config import ViewerConfig
 from nerfstudio.data.datamanagers.full_images_datamanager import FullImageDatamanagerConfig
 from nerfstudio.data.dataparsers.nerfstudio_dataparser import NerfstudioDataParserConfig
 from nerfstudio.pipelines.base_pipeline import VanillaPipelineConfig
-from nerfstudio.models.splatfacto import SplatfactoModelConfig
+from key_gaussian.key_gaussian_model import KeyGaussiansModelConfig
 from nerfstudio.engine.optimizers import AdamOptimizerConfig
 from nerfstudio.plugins.types import MethodSpecification
 from nerfstudio.engine.schedulers import (
@@ -26,7 +26,7 @@ key_gaussian=MethodSpecification(
             dataparser=NerfstudioDataParserConfig(load_3D_points=True),
             cache_images_type="uint8",
         ),
-        model=SplatfactoModelConfig(
+        model=KeyGaussiansModelConfig(
             cull_alpha_thresh=0.005,
             continue_cull_post_densification=False,
             densify_grad_thresh=0.0006,

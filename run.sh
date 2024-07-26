@@ -11,12 +11,15 @@ EXP_NAME="Key5"
 for SCENE in "${SCENE_LIST[@]}"
 do
 mkdir -p Tanks_key5/${SCENE}
-ns-train key_gaussian --data Tanks_key5/${SCENE} \
-    --pipeline.model.cull-screen-size 0.5 \
-    --optimizers.camera-opt.optimizer.lr 1e-3 \
-    --optimizers.camera-opt.scheduler.lr-final 1e-5  --viewer.quit_on_train_completion True \
-    --vis tensorboard \
-    --timestamp ${EXP_NAME}\
-    colmap --colmap-path sparse/0 --auto-scale-poses True | tee -a outputs/${SCENE}/${EXP_NAME}/train_log.txt 
+# training 
+# ns-train key_gaussian --data Tanks_key5/${SCENE} \
+#     --pipeline.model.cull-screen-size 0.5 \
+#     --optimizers.camera-opt.optimizer.lr 1e-3 \
+#     --optimizers.camera-opt.scheduler.lr-final 1e-5  --viewer.quit_on_train_completion True \
+#     --vis tensorboard \
+#     --timestamp ${EXP_NAME}\
+#     colmap --colmap-path sparse/0 --auto-scale-poses True | tee -a outputs/${SCENE}/${EXP_NAME}/train_log.txt 
+# export camera pose
 
+ns-export cameras --load-config outputs/${SCENE}/key_gaussian/${EXP_NAME}/config.yml --output-dir outputs/${SCENE}/key_gaussian/${EXP_NAME}/
 done
