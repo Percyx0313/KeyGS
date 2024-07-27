@@ -3,7 +3,8 @@ from nerfstudio.engine.trainer import TrainerConfig
 from nerfstudio.configs.base_config import ViewerConfig
 from nerfstudio.data.datamanagers.full_images_datamanager import FullImageDatamanagerConfig
 from nerfstudio.data.dataparsers.nerfstudio_dataparser import NerfstudioDataParserConfig
-from nerfstudio.pipelines.base_pipeline import VanillaPipelineConfig
+# from nerfstudio.pipelines.base_pipeline import VanillaPipelineConfig
+from key_gaussian.key_gaussian_pipeline import KeyGSPipelineConfig
 from key_gaussian.key_gaussian_model import KeyGaussiansModelConfig
 from nerfstudio.engine.optimizers import AdamOptimizerConfig
 from nerfstudio.plugins.types import MethodSpecification
@@ -21,7 +22,7 @@ key_gaussian=MethodSpecification(
     steps_per_eval_all_images=1000,
     max_num_iterations=30000,
     mixed_precision=False,
-    pipeline=VanillaPipelineConfig(
+    pipeline=KeyGSPipelineConfig(
         datamanager=FullImageDatamanagerConfig(
             dataparser=NerfstudioDataParserConfig(load_3D_points=True),
             cache_images_type="uint8",
