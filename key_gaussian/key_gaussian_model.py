@@ -32,8 +32,10 @@ def get_viewmat(optimized_camera_to_world):
 @dataclass
 class KeyGaussiansModelConfig(SplatfactoModelConfig):
     """BAD-Gaussians Model config"""
-
+    
     _target: Type = field(default_factory=lambda: KeyGaussianModel)
+    
+    use_abs_grad: bool = True
     
 class KeyGaussianModel(SplatfactoModel):
 
@@ -215,3 +217,22 @@ class KeyGaussianModel(SplatfactoModel):
         else:
             raise ValueError(f"Unknown background color {self.config.background_color}")
         return background
+    def after_train(self, step: int):
+        assert step == self.step
+        # to save some training time, we no longer need to update those stats post refinement
+        if self.step >= self.config.stop_split_at:
+            return
+        with torch.no_grad():
+            # keep track of a moving average of grad norms
+            visible_mask = (self.radii > 0).flatten()
+            if self.config.use_abs_grad:
+                grads = self.xys.absgrad[0][visible_mask].norm(dim=-1)
+            else:
+                grads = self.xys.grad[0][visible_mask].norm(dim=-1)
+            # print(f"grad norm min {grads.min().item()} max {grads.max().item()} mean {grads.mean().item()} size {grads.shape}")
+            if self.xys_grad_norm is None:
+                self.xys_grad_norm = torch.zeros(self.num_points, device=self.device, dtype=torch.float32)
+                self.vis_counts = torch.ones(self.num_points, device=self.device, dtype=torch.float32)
+            assert self.vis_counts is not None
+            self.vis_counts[visible_mask] += 1
+            self.xys_grad_norm[visible_mask] += grads

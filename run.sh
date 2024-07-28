@@ -7,27 +7,47 @@ export NERFSTUDIO_METHOD_CONFIGS="key_gaussian=key_gaussian.key_gaussian_config:
 #     colmap --colmap-path sparse/0 --auto-scale-poses False
 
 SCENE_LIST=( "Horse" "Museum"   "Church" "Family"   "Ignatius"  "Ballroom" "Barn" "Francis" )
-EXP_NAME="eval_pose_key5"
+EXP_NAME="base+abs+cull+antialiased+split25k"
 for SCENE in "${SCENE_LIST[@]}"
 do
-mkdir -p outputs/${SCENE}/${EXP_NAME}/
-# training 
+mkdir -p outputs/${SCENE}/key_gaussian/${EXP_NAME}/
+# training  # current best
+# ns-train key_gaussian --data Tanks_key5/${SCENE} \
+#     --optimizers.camera-opt.optimizer.lr 1e-3 \
+#     --optimizers.camera-opt.scheduler.lr-final 1e-5  --viewer.quit_on_train_completion True \
+#     --vis tensorboard \
+#     --timestamp ${EXP_NAME} \
+#     --pipeline.model.stop-split-at 15000 \
+#     --pipeline.model.sh-degree-interval 1000 \
+#     --pipeline.model.rasterize-mode antialiased \
+#     --pipeline.model.camera-optimizer.mode SO3xR3 \
+#     --optimizers.camera-opt.scheduler.warmup-steps 3000 \
+#     --pipeline.model.cull-alpha-thresh 0.05 \
+#     --pipeline.model.use-scale-regularization True \
+#     colmap --colmap-path sparse/0 --auto-scale-poses True \
+#     | tee -a outputs/${SCENE}/${EXP_NAME}/train_log.txt 
+
+
 ns-train key_gaussian --data Tanks_key5/${SCENE} \
     --optimizers.camera-opt.optimizer.lr 1e-3 \
     --optimizers.camera-opt.scheduler.lr-final 1e-5  --viewer.quit_on_train_completion True \
     --vis tensorboard \
     --timestamp ${EXP_NAME} \
-    --pipeline.model.stop-split-at 15000 \
+    --pipeline.model.stop-split-at 25000 \
     --pipeline.model.sh-degree-interval 1000 \
     --pipeline.model.rasterize-mode antialiased \
     --pipeline.model.camera-optimizer.mode SO3xR3 \
-    --optimizers.camera-opt.scheduler.warmup-steps 3000 \
+    --optimizers.camera-opt.scheduler.warmup-steps 1000 \
     --pipeline.model.cull-alpha-thresh 0.05 \
+    --pipeline.model.output-depth-during-training True \
     --pipeline.model.use-scale-regularization True \
+    --pipeline.model.use-abs-grad True \
+    --pipeline.model.densify-grad-thresh 0.0008 \
+    --pipeline.model.split-screen-size 0.05 \
+    --pipeline.model.stop-screen-size-at 4000 \
     colmap --colmap-path sparse/0 --auto-scale-poses True \
-    | tee -a outputs/${SCENE}/${EXP_NAME}/train_log.txt 
+    | tee -a outputs/${SCENE}/key_gaussian/${EXP_NAME}/train_log.txt 
 # export camera pose
-
 ns-export cameras --load-config outputs/${SCENE}/key_gaussian/${EXP_NAME}/config.yml --output-dir outputs/${SCENE}/key_gaussian/${EXP_NAME}/
 ns-eval --load-config outputs/${SCENE}/key_gaussian/${EXP_NAME}/config.yml --output-path outputs/${SCENE}/key_gaussian/${EXP_NAME}/eval.json --render-output-path outputs/${SCENE}/key_gaussian/${EXP_NAME}/eval/ 
 done
