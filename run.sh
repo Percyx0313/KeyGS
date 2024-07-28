@@ -59,3 +59,4 @@ do
     mv outputs/${SCENE}/key_gaussian/${EXP_NAME} outputs/${EXP_NAME}/${SCENE}
     rm -r outputs/${SCENE}
 done
+
