@@ -42,7 +42,7 @@ class KeyGSPipeline(VanillaPipeline):
             )
             
             optim=torch.optim.Adam(self.model.eval_camera_optimizer.parameters(), lr=1e-3)
-            gamma=0.1**(1/num_epochs)
+            gamma=0.01**(1/num_epochs)
             scheduler=torch.optim.lr_scheduler.ExponentialLR(optim, gamma=gamma)
             
             self.model.train()
@@ -101,8 +101,10 @@ class KeyGSPipeline(VanillaPipeline):
                     assert fps_str not in metrics_dict
                     metrics_dict[fps_str] = (metrics_dict["num_rays_per_sec"] / (height * width)).item()
                     metrics_dict_list.append(metrics_dict)
+                    print(f"{idx} , PSNR {metrics_dict['psnr']}")
                     progress.advance(task)
                     idx = idx + 1
+                    
                     
 
             metrics_dict = {}
