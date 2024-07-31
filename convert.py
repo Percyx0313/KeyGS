@@ -15,7 +15,6 @@ from argparse import ArgumentParser
 import shutil
 import glob
 import time
-
 # This Python script is based on the shell converter script provided in the MipNerF 360 repository.
 parser = ArgumentParser("Colmap converter")
 parser.add_argument("--no_gpu", action='store_true')
@@ -26,7 +25,7 @@ parser.add_argument("--colmap_executable", default="", type=str)
 parser.add_argument("--resize", action="store_true")
 parser.add_argument("--magick_executable", default="", type=str)
 parser.add_argument("--sequential", action='store_true')
-parser.add_argument("--overlap", default=15, type=int)
+parser.add_argument("--overlap", default=5, type=int)
 parser.add_argument("--keyframe_interval", default=5, type=int)
 args = parser.parse_args()
 colmap_command = '"{}"'.format(args.colmap_executable) if len(args.colmap_executable) > 0 else "colmap"
@@ -67,17 +66,20 @@ if not args.skip_matching:
         --image_path " + args.source_path + "/input \
         --ImageReader.single_camera 1 \
         --ImageReader.camera_model " + args.camera + " \
-        --SiftExtraction.use_gpu " + str(use_gpu)
+        --SiftExtraction.use_gpu " + str(use_gpu) 
     exit_code = os.system(feat_extracton_cmd)
     if exit_code != 0:
         logging.error(f"Feature extraction failed with code {exit_code}. Exiting.")
         exit(exit_code)
 
+    print(f"using overlap {args.overlap}")
+    SUCCESS=False
+    # while not SUCCESS:
     ## Feature matching
     if args.sequential==True:
         feat_matching_cmd = colmap_command + " sequential_matcher \
             --database_path " + args.source_path + "/distorted/database.db \
-            --SiftMatching.use_gpu " + str(use_gpu) + " --SequentialMatching.overlap " + str(args.overlap)
+            --SiftMatching.use_gpu " + str(use_gpu) + " --SequentialMatching.overlap " + str(args.overlap) + " --SequentialMatching.loop_detection_num_nearest_neighbor 10"
     else:
         feat_matching_cmd = colmap_command + " exhaustive_matcher \
             --database_path " + args.source_path + "/distorted/database.db \
@@ -99,6 +101,17 @@ if not args.skip_matching:
     if exit_code != 0:
         logging.error(f"Mapper failed with code {exit_code}. Exiting.")
         exit(exit_code)
+        # if os.path.exists(args.source_path + "/distorted/sparse/1"):
+        #     args.overlap+=5
+        #     print(f"using overlap {args.overlap}")
+        #     fail_dir=glob.glob(args.source_path + "/distorted/sparse/*")
+        #     for fh in fail_dir:
+        #         shutil.rmtree(fh)
+        #     if args.overlap==25:
+        #         logging.error(f"Mapper failed.")
+        #         break
+        # else:
+        #     SUCCESS=True
 
 ### Image undistortion
 ## We need to undistort our images into ideal pinhole intrinsics.

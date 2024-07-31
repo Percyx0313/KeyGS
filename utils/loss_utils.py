@@ -11,6 +11,7 @@ import torch
 import torch.nn.functional as F
 from torch.autograd import Variable
 from math import exp
+from utils.image_utils import rgb2loftrgray
 
 def l1_loss(network_output, gt):
     return torch.abs((network_output - gt)).mean()
@@ -60,3 +61,30 @@ def _ssim(img1, img2, window, window_size, channel, size_average=True):
     else:
         return ssim_map.mean(1).mean(1).mean(1)
 
+
+
+
+def loss_loftr(q_img,r_img,matcher,threshold,min_num_points):
+    q_img_gray=rgb2loftrgray(q_img)
+    r_img_gray = rgb2loftrgray(r_img)
+    batch = {'image0':q_img_gray, 'image1':r_img_gray}
+    matcher(batch)
+    mkpts0 = batch['mkpts0_f']
+    mkpts1 = batch['mkpts1_f']
+    mconf = batch['mconf']
+
+    #Select a subset of matching points with higher confidence.
+    indices = torch.nonzero(mconf > threshold).squeeze()
+    count = indices.numel()
+    if count < min_num_points:
+        return None
+  
+    x1 = mkpts0[indices, 0] / 640
+    y1 = mkpts0[indices, 1] / 480
+    x2 = mkpts1[indices, 0] / 640
+    y2 = mkpts1[indices, 1] / 480
+    error_i = (x1 - x2) ** 2 + (y1 - y2) ** 2
+    error_i = error_i.float().cuda()
+    loss=torch.sum(error_i)/len(indices)  
+    
+    return loss
