@@ -45,12 +45,16 @@ if not args.skip_matching:
     os.makedirs(input_path,exist_ok=True)
     
     # extract the key frame by the keyframe_interval
-    key_frame_image_file_list=raw_images_file_list[::args.keyframe_interval]
+    if args.sequential==True:
+        key_frame_image_file_list=raw_images_file_list[::args.keyframe_interval]
     
-    # add the last frame for convinience to interpolation
-    if(raw_images_file_list[-1] not in key_frame_image_file_list):
-        key_frame_image_file_list.append(raw_images_file_list[-1])
-    
+        # add the last frame for convinience to interpolation
+        if(raw_images_file_list[-1] not in key_frame_image_file_list):
+            key_frame_image_file_list.append(raw_images_file_list[-1])
+    else:
+        key_frame_image_file_list=raw_images_file_list
+        
+    print(key_frame_image_file_list)
     
     for fh in key_frame_image_file_list:
         shutil.copy2(fh,input_path)
@@ -79,7 +83,7 @@ if not args.skip_matching:
     if args.sequential==True:
         feat_matching_cmd = colmap_command + " sequential_matcher \
             --database_path " + args.source_path + "/distorted/database.db \
-            --SiftMatching.use_gpu " + str(use_gpu) + " --SequentialMatching.overlap " + str(args.overlap) + " --SequentialMatching.loop_detection_num_nearest_neighbor 10"
+            --SiftMatching.use_gpu " + str(use_gpu) + " --SequentialMatching.overlap " + str(args.overlap) + " --SequentialMatching.loop_detection_num_nearest_neighbor 1"
     else:
         feat_matching_cmd = colmap_command + " exhaustive_matcher \
             --database_path " + args.source_path + "/distorted/database.db \

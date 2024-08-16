@@ -131,6 +131,11 @@ class KeyGSPipeline(VanillaPipeline):
                             vutils.save_image(
                                 image.permute(2, 0, 1).cpu(), output_path / f"{image_prefix}_{key}_{idx:04d}.png"
                             )
+                        # output depth
+                        # depth=outputs["depth"]
+                        # vutils.save_image(
+                        #     image.permute(2, 0, 1).cpu(), output_path / f"{image_prefix}_{"depth"}_{idx:04d}.png"
+                        # )
 
                     assert "num_rays_per_sec" not in metrics_dict
                     height, width = camera.height, camera.width

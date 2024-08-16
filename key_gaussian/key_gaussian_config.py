@@ -29,7 +29,7 @@ key_gaussian=MethodSpecification(
         ),
         model=KeyGaussiansModelConfig(
             cull_alpha_thresh=0.005,
-            continue_cull_post_densification=False,
+            continue_cull_post_densification=True, # False
             densify_grad_thresh=0.0006,
         ),
     ),

@@ -219,6 +219,7 @@ def plot_pose(ref_poses, est_poses, output_path, vid=False):
             for idx, (label, traj) in enumerate(traj_by_label.items()):
                 plot.traj(ax, plot_mode, traj,
                           styles[idx], colors[idx], label)
+                    
                 # break
             # plot.trajectories(fig, traj_by_label, plot.PlotMode.xyz)
             ax.view_init(elev=10., azim=45)
@@ -235,9 +236,10 @@ def plot_pose(ref_poses, est_poses, output_path, vid=False):
     fig = plt.figure()
     traj_by_label = {
         # "estimate (not aligned)": traj_est,
-        "Ours (aligned)": traj_est_aligned,
+        "KeyGS (aligned)": traj_est_aligned,
         "Ground-truth": traj_ref
     }
+    
     plot_mode = plot.PlotMode.xyz
     # ax = plot.prepare_axis(fig, plot_mode, 111)
     ax = fig.add_subplot(111, projection="3d")
@@ -250,9 +252,12 @@ def plot_pose(ref_poses, est_poses, output_path, vid=False):
     for idx, (label, traj) in enumerate(traj_by_label.items()):
         plot.traj(ax, plot_mode, traj,
                   styles[idx], colors[idx], label)
+        # if idx==0 and (label%10==0 or label==len(traj_by_label)-1):
+        #     plot.traj(ax, plot_mode, traj,
+        #             '--', 'g', label)
         # break
     # plot.trajectories(fig, traj_by_label, plot.PlotMode.xyz)
     ax.view_init(elev=10., azim=45)
     plt.tight_layout()
-    pose_vis_path = os.path.join(os.path.dirname(output_path), 'pose_vis.png')
+    pose_vis_path = os.path.join(output_path, 'pose_vis.png')
     fig.savefig(pose_vis_path)

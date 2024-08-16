@@ -1,31 +1,34 @@
 export NERFSTUDIO_METHOD_CONFIGS="key_gaussian=key_gaussian.key_gaussian_config:key_gaussian"
+# Baseline model
+# SCENE_LIST=(   "Ignatius" "Horse"     "Ballroom" "Barn"  "Francis"   "Museum"   "Church" )
 
-# ns-train splatfacto --data data/Museum_Key5/ \
-#     --optimizers.camera-opt.optimizer.lr=1e-3 \
-#     --viewer.quit_on_train_completion True \
-#     --vis viewer+tensorboard \
-#     colmap --colmap-path sparse/0 --auto-scale-poses False
-
-# SCENE_LIST=( "Francis"  "Horse" "Museum"   "Church" "Family"   "Ignatius"  "Ballroom" "Barn"  )
-# EXP_NAME="base+abs+cull+antialiased+split25k+inter"
+# EXP_NAME="TANK_KEY5_BASE" 
 # for SCENE in "${SCENE_LIST[@]}"
 # do
 # mkdir -p outputs/${SCENE}/key_gaussian/${EXP_NAME}/
-# training  # current best
-# ns-train key_gaussian --data Tanks_key5/${SCENE} \
-#     --optimizers.camera-opt.optimizer.lr 1e-3 \
-#     --optimizers.camera-opt.scheduler.lr-final 1e-5  --viewer.quit_on_train_completion True \
-#     --vis tensorboard \
-#     --timestamp ${EXP_NAME} \
-#     --pipeline.model.stop-split-at 15000 \
-#     --pipeline.model.sh-degree-interval 1000 \
-#     --pipeline.model.rasterize-mode antialiased \
-#     --pipeline.model.camera-optimizer.mode SO3xR3 \
-#     --optimizers.camera-opt.scheduler.warmup-steps 3000 \
-#     --pipeline.model.cull-alpha-thresh 0.05 \
-#     --pipeline.model.use-scale-regularization True \
-#     colmap --colmap-path sparse/0 --auto-scale-poses True \
-#     | tee -a outputs/${SCENE}/${EXP_NAME}/train_log.txt 
+# # training  # current best
+# # ns-train key_gaussian --data dataset/Tanks_inter/${SCENE} \
+# #     --optimizers.camera-opt.optimizer.lr 1e-3 \
+# #     --optimizers.camera-opt.scheduler.lr-final 1e-5  --viewer.quit_on_train_completion True \
+# #     --vis tensorboard \
+# #     --timestamp ${EXP_NAME} \
+# #     --pipeline.model.stop-split-at 20000 \
+# #     --pipeline.model.sh-degree-interval 1000 \
+# #     --pipeline.model.rasterize-mode antialiased \ 
+# #     --pipeline.model.camera-optimizer.mode SO3xR3 \
+# #     --optimizers.camera-opt.scheduler.warmup-steps 1000 \
+# #     --pipeline.model.cull-alpha-thresh 0.05 \
+# #     --pipeline.model.output-depth-during-training True \
+# #     --pipeline.model.densify-grad-thresh 0.0004 \
+# #     --optimizers.camera-opt.scheduler.lr-pre-warmup 1e-5 --pipeline.model.use-abs-grad True \
+# #     --pipeline.model.background-color black \
+# #     --pipeline.model.split-screen-size 0.05 \
+# #     --pipeline.model.stop-screen-size-at 4000 \
+# #     --pipeline.model.camera-optimizer.trans-l2-penalty 0.0 \
+# #     --pipeline.model.camera-optimizer.rot-l2-penalty  0.0 \
+# #     --pipeline.model.use-scale-regularization True \
+# #     colmap --colmap-path sparse/0 --auto-scale-poses True \
+# #     | tee -a outputs/${SCENE}/key_gaussian/${EXP_NAME}/train_log.txt 
 
 
 # ns-train key_gaussian --data dataset/Tanks_inter/${SCENE} \
@@ -35,22 +38,22 @@ export NERFSTUDIO_METHOD_CONFIGS="key_gaussian=key_gaussian.key_gaussian_config:
 #     --timestamp ${EXP_NAME} \
 #     --pipeline.model.stop-split-at 20000 \
 #     --pipeline.model.sh-degree-interval 1000 \
-#     --pipeline.model.rasterize-mode antialiased \
 #     --pipeline.model.camera-optimizer.mode SO3xR3 \
 #     --optimizers.camera-opt.scheduler.warmup-steps 1000 \
-#     --pipeline.model.cull-alpha-thresh 0.05 \
 #     --pipeline.model.output-depth-during-training True \
-#     --pipeline.model.use-scale-regularization True \
-#     --pipeline.model.use-abs-grad True \
 #     --pipeline.model.densify-grad-thresh 0.0004 \
+#     --optimizers.camera-opt.scheduler.lr-pre-warmup 1e-5  \
+#     --pipeline.model.background-color black \
 #     --pipeline.model.split-screen-size 0.05 \
 #     --pipeline.model.stop-screen-size-at 4000 \
 #     colmap --colmap-path sparse/0 --auto-scale-poses True \
 #     | tee -a outputs/${SCENE}/key_gaussian/${EXP_NAME}/train_log.txt 
-# export camera pose
-# ns-export cameras --load-config outputs/${SCENE}/key_gaussian/${EXP_NAME}/config.yml --output-dir outputs/${SCENE}/key_gaussian/${EXP_NAME}/ 
-# ns-eval --load-config outputs/${SCENE}/key_gaussian/${EXP_NAME}/config.yml --output-path outputs/${SCENE}/key_gaussian/${EXP_NAME}/eval.json --render-output-path outputs/${SCENE}/key_gaussian/${EXP_NAME}/eval/  | tee -a outputs/${SCENE}/key_gaussian/${EXP_NAME}/eval_log.txt 
-# ns-eval --load-config outputs/${EXP_NAME}/${SCENE}/config.yml --output-path outputs/${EXP_NAME}/${SCENE}/eval.json --render-output-path outputs/${EXP_NAME}/${SCENE}/eval_log.txt 
+# # export camera pose
+#     mv train_temp outputs/${SCENE}/key_gaussian/${EXP_NAME}/
+#     ns-export cameras --load-config outputs/${SCENE}/key_gaussian/${EXP_NAME}/config.yml --output-dir outputs/${SCENE}/key_gaussian/${EXP_NAME}/ 
+#     ns-eval --load-config outputs/${SCENE}/key_gaussian/${EXP_NAME}/config.yml --output-path outputs/${SCENE}/key_gaussian/${EXP_NAME}/eval.json --render-output-path outputs/${SCENE}/key_gaussian/${EXP_NAME}/eval/  | tee -a outputs/${SCENE}/key_gaussian/${EXP_NAME}/eval_log.txt 
+#     ns-render interpolate  --load-config outputs/${SCENE}/key_gaussian/${EXP_NAME}/config.yml
+#     mv renders/output.mp4 outputs/${SCENE}/key_gaussian/${EXP_NAME}/output.mp4
 # done
 
 # move to the final directory 
@@ -61,16 +64,32 @@ export NERFSTUDIO_METHOD_CONFIGS="key_gaussian=key_gaussian.key_gaussian_config:
 #     rm -r outputs/${SCENE}
 # done
 
+# #"bench/415_57112_110099"
+SCENE_LIST=( "bench" "hydrant" "apple"   "skateboard" "teddybear"  )
 
-SCENE_LIST=( "hydrant/106_12648_23157" "apple/110_13051_23361" "bench/415_57112_110099"  "skateboard/245_26182_52130" "teddybear/34_1403_4393" )
-
-EXP_NAME="co3d_inter_opacity_reg"
+EXP_NAME="CO3D_KEY5_BEST_CULL"
 for SCENE in "${SCENE_LIST[@]}"
 do
-BASE_NAME=$(basename "$SCENE" "SCENE")
-mkdir -p outputs/${BASE_NAME}/key_gaussian/${EXP_NAME}/
+mkdir -p outputs/${SCENE}/key_gaussian/${EXP_NAME}/
+# ns-train key_gaussian --data dataset/CFGS_Co3d_inter/${SCENE}/${SCENE} \
+#     --optimizers.camera-opt.optimizer.lr 1e-3 \
+#     --optimizers.camera-opt.scheduler.lr-final 1e-5  --viewer.quit_on_train_completion True \
+#     --vis tensorboard \
+#     --timestamp ${EXP_NAME} \
+#     --pipeline.model.stop-split-at 15000 \
+#     --pipeline.model.sh-degree-interval 1000 \
+#     --pipeline.model.camera-optimizer.mode SO3xR3 \
+#     --pipeline.model.densify-grad-thresh 0.0004 \
+#     --optimizers.camera-opt.scheduler.warmup-steps 0 \
+#     --pipeline.model.cull-alpha-thresh 0.005 \
+#     --optimizers.camera-opt.scheduler.lr-pre-warmup 1e-5 \
+#     --pipeline.model.use-scale-regularization False \
+#     --pipeline.model.use-abs-grad False \
+#     colmap --colmap-path sparse/0 --auto-scale-poses True \
+#     | tee -a outputs/${SCENE}/${EXP_NAME}/train_log.txt 
 
-ns-train key_gaussian --data dataset/CFGS_Co3d_inter/${SCENE} \
+
+    ns-train key_gaussian --data dataset/CFGS_Co3d_inter/${SCENE}/${SCENE} \
     --optimizers.camera-opt.optimizer.lr 1e-3 \
     --optimizers.camera-opt.scheduler.lr-final 1e-5  --viewer.quit_on_train_completion True \
     --vis tensorboard \
@@ -82,29 +101,29 @@ ns-train key_gaussian --data dataset/CFGS_Co3d_inter/${SCENE} \
     --optimizers.camera-opt.scheduler.warmup-steps 1000 \
     --pipeline.model.cull-alpha-thresh 0.05 \
     --pipeline.model.output-depth-during-training True \
-    --pipeline.model.use-abs-grad True \
     --pipeline.model.densify-grad-thresh 0.0004 \
+    --optimizers.camera-opt.scheduler.lr-pre-warmup 1e-5 --pipeline.model.use-abs-grad True \
+    --pipeline.model.background-color black \
     --pipeline.model.split-screen-size 0.05 \
+    --pipeline.model.cull-scale-thresh 0.05 \
     --pipeline.model.stop-screen-size-at 4000 \
-    --pipeline.model.camera-optimizer.trans-l2-penalty 0.0001 \
-    --pipeline.model.camera-optimizer.rot-l2-penalty  0.0001 \
-    --pipeline.model.use-opacity-reg True \
+    --pipeline.model.camera-optimizer.trans-l2-penalty 0.0 \
+    --pipeline.model.camera-optimizer.rot-l2-penalty  0.0 \
+    --pipeline.model.use-scale-regularization True \
     colmap --colmap-path sparse/0 --auto-scale-poses True \
-    | tee -a outputs/${BASE_NAME}/key_gaussian/${EXP_NAME}/train_log.txt 
-#     # export camera pose
-    ns-export cameras --load-config outputs/${BASE_NAME}/key_gaussian/${EXP_NAME}/config.yml --output-dir outputs/${BASE_NAME}/key_gaussian/${EXP_NAME}/ 
-    ns-eval --load-config outputs/${BASE_NAME}/key_gaussian/${EXP_NAME}/config.yml --output-path outputs/${BASE_NAME}/key_gaussian/${EXP_NAME}/eval.json --render-output-path outputs/${BASE_NAME}/key_gaussian/${EXP_NAME}/eval/  | tee -a outputs/${BASE_NAME}/key_gaussian/${EXP_NAME}/eval_log.txt 
-
+    | tee -a outputs/${SCENE}/key_gaussian/${EXP_NAME}/train_log.txt 
+    # export camera pose
+    ns-export cameras --load-config outputs/${SCENE}/key_gaussian/${EXP_NAME}/config.yml --output-dir outputs/${SCENE}/key_gaussian/${EXP_NAME}/ 
+    ns-eval --load-config outputs/${SCENE}/key_gaussian/${EXP_NAME}/config.yml --output-path outputs/${SCENE}/key_gaussian/${EXP_NAME}/eval.json --render-output-path outputs/${SCENE}/key_gaussian/${EXP_NAME}/eval/  | tee -a outputs/${SCENE}/key_gaussian/${EXP_NAME}/eval_log.txt 
+    ns-render interpolate  --load-config outputs/${SCENE}/key_gaussian/${EXP_NAME}/config.yml
+    mv train_temp outputs/${SCENE}/key_gaussian/${EXP_NAME}/
+    mv renders/output.mp4 outputs/${SCENE}/key_gaussian/${EXP_NAME}/output.mp4
 done
 
-
-
-# move to the final directory 
+# # move to the final directory 
 mkdir -p outputs/${EXP_NAME}
 for SCENE in "${SCENE_LIST[@]}"
 do
-    BASE_NAME=$(basename "$SCENE" "SCENE")
-    PARENT_DIR=$(dirname "$SCENE")
-    mv outputs/${BASE_NAME}/key_gaussian/${EXP_NAME} outputs/${EXP_NAME}/${PARENT_DIR}
-    rm -r outputs/${BASE_NAME}
+    mv outputs/${SCENE}/key_gaussian/${EXP_NAME} outputs/${EXP_NAME}/${SCENE}
+    rm -r outputs/${SCENE}
 done
