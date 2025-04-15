@@ -1,0 +1,15 @@
+[project]
+name="key_gaussian"
+version="0.0.0"
+
+dependencies=[
+    "nerfstudio>=1.0.3",
+    "pypose",
+    "gsplat>=0.1.11,<1.0.0"
+]
+
+[tool.setuptools.packages.find]
+include=["key_gaussian"]
+
+[project.entry-points.'nerfstudio.method_configs']
+key_gaussian='key_gaussian.key_gaussian_config:key_gaussian'
